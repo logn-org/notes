@@ -4,6 +4,8 @@ import '../services/auth_service.dart'; // Import AuthService
 
 // --- screens/login_screen.dart ---
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -23,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       // Error handling is done within AuthService, but you could show a snackbar here too
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign-in failed. Please try again.')),
+        const SnackBar(content: Text('Sign-in failed. Please try again.')),
       );
     } finally {
       // Ensure loading indicator is hidden even if the widget is removed
@@ -57,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 size: 80,
                 color: Colors.yellow.shade800,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Text(
                 'Flutter Keep',
                 style: TextStyle(
@@ -67,11 +69,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   letterSpacing: 1.2, // Add some spacing
                 ),
               ),
-              SizedBox(height: 60), // Increased spacing
+              const SizedBox(height: 60), // Increased spacing
 
               // Google Sign-In Button with Loading Indicator
               _isLoading
-                  ? CircularProgressIndicator(
+                  ? const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     )
                   : ElevatedButton.icon(
@@ -79,14 +81,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         'assets/google_logo.png', // Ensure this asset exists
                         height: 24.0,
                         // Add errorBuilder for robustness
-                        errorBuilder: (context, error, stackTrace) => Icon(Icons.login, size: 24),
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.login, size: 24),
                       ),
-                      label: Text('Sign in with Google'),
+                      label: const Text('Sign in with Google'),
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.black87,
                         backgroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15), // Increased padding
-                        textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15), // Increased padding
+                        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),

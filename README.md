@@ -1,4 +1,4 @@
-# myapp
+# Logn Notes
 
 A new Flutter project.
 

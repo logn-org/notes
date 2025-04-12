@@ -1,4 +1,4 @@
-package com.example.myapp
+package com.logncomplexity.notes
 
 import io.flutter.embedding.android.FlutterActivity
 

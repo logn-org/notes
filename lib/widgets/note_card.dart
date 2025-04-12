@@ -7,13 +7,16 @@ import '../models/note_model.dart';
 import '../services/firestore_service.dart';
 import '../services/auth_service.dart'; // To get user ID for navigation
 import '../screens/note_editor_screen.dart'; // To navigate to editor
+import '../utils/note_colors.dart';
 
 // --- widgets/note_card.dart ---
 class NoteCard extends StatelessWidget {
   final Note note;
+  final int index;
   final FirestoreService _firestoreService = FirestoreService(); // Instance for pinning
 
-  NoteCard({required this.note, Key? key}) : super(key: key); // Add Key
+  // Initialize index
+  NoteCard({required this.note, this.index = 0, super.key}); // Add Key
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +24,9 @@ class NoteCard extends StatelessWidget {
     final authService = Provider.of<AuthService>(context, listen: false);
     final String? currentUserId = authService.currentUser?.uid;
 
-    // Determine card background color (optional subtle variation)
-    final cardColor = _getCardColor(context);
+    // Determine card background color
+    final Color? noteColor = note.color;
+    final Color cardColor = noteColor ?? NoteColors.getRandomColor();
 
     return GestureDetector(
       onTap: () {
@@ -40,7 +44,7 @@ class NoteCard extends StatelessWidget {
         } else {
           // Handle case where user ID is somehow null (should not happen with AuthWrapper)
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: Could not identify user.')),
+            const SnackBar(content: Text('Error: Could not identify user.')),
           );
           print("Error: User ID is null when trying to edit note.");
         }
@@ -54,7 +58,7 @@ class NoteCard extends StatelessWidget {
           // side: BorderSide(color: Colors.grey.shade300, width: 0.5),
         ),
         child: Padding(
-          padding: EdgeInsets.all(12.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min, // Ensure card takes minimum vertical space
@@ -80,7 +84,7 @@ class NoteCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           )
-                        : SizedBox.shrink(), // No title, don't take space
+                        : const SizedBox.shrink(), // No title, don't take space
                   ),
                   // Pin Toggle Button (always visible)
                   Material( // Wrap InkWell with Material for correct visual feedback
@@ -109,18 +113,18 @@ class NoteCard extends StatelessWidget {
                 ],
               ),
               // Add space only if title exists
-              if (note.title != null && note.title!.isNotEmpty) SizedBox(height: 8),
+              if (note.title != null && note.title!.isNotEmpty) const SizedBox(height: 8),
 
               // --- Note Content (Text or Checklist) ---
               // Add some vertical spacing before content
-              if (note.title != null && note.title!.isNotEmpty) SizedBox.shrink() else SizedBox(height: 4),
+              if (note.title != null && note.title!.isNotEmpty) const SizedBox.shrink() else const SizedBox(height: 4),
               Flexible( // Allow content to take available space within card constraints
                  child: _buildContent(context),
               ),
 
 
               // --- Footer: Last Updated Date ---
-              SizedBox(height: 10), // Space before footer
+              const SizedBox(height: 10), // Space before footer
               Align(
                 alignment: Alignment.bottomRight,
                 child: Text(
@@ -171,7 +175,7 @@ class NoteCard extends StatelessWidget {
                     size: 18,
                     color: item.isChecked ? subduedColor : bodyColor,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   // Use Expanded to allow text wrapping
                   Expanded(
                     child: Text(
@@ -189,7 +193,7 @@ class NoteCard extends StatelessWidget {
                 ],
               ),
             );
-          }).toList(),
+          }),
           // Show ellipsis (...) if more items exist
           if (items.length > itemsToShow)
             Padding(
@@ -227,16 +231,5 @@ class NoteCard extends StatelessWidget {
         style: TextStyle(fontSize: 14, color: Colors.red.shade700, fontStyle: FontStyle.italic),
       );
     }
-  }
-
-  // Helper to get a subtle background color (optional)
-  Color _getCardColor(BuildContext context) {
-    // Example: Could base color on note ID hash, type, or keep it simple
-    // For simplicity, using the default card color from the theme
-    return Theme.of(context).cardColor;
-    // Example variation:
-    // final hash = note.id.hashCode;
-    // final colors = [Colors.white, Colors.yellow.shade50, Colors.lightBlue.shade50, Colors.green.shade50];
-    // return colors[hash % colors.length];
   }
 }

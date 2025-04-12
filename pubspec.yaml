@@ -1,5 +1,5 @@
-name: myapp
-description: "A new Flutter project."
+name: logn_notes
+description: "A notes app using firebase"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -46,6 +46,8 @@ dependencies:
 
   # Icons (Optional, but good for UI)
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.5.3
+  flex_color_picker: ^3.7.0
 
 dev_dependencies:
   flutter_test:

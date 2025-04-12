@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 // --- models/note_model.dart ---
 
@@ -50,6 +51,8 @@ class Note {
   bool isPinned;
   Timestamp createdAt;
   Timestamp updatedAt;
+  Color? color; // Add color field
+  int order;
 
   Note({
     required this.id,
@@ -60,6 +63,8 @@ class Note {
     this.isPinned = false,
     required this.createdAt,
     required this.updatedAt,
+    this.color, // Default color white
+    this.order = 0,
   });
 
   // Convert Note object to a Map for Firestore
@@ -85,6 +90,8 @@ class Note {
       'createdAt': createdAt,
       'updatedAt': updatedAt, // This will be overwritten by FirestoreService on update
       // serverTimestamp is handled directly by FirestoreService
+      'color': color, // Add color to the map
+      'order': order, // Add order to the map
     };
   }
 
@@ -121,6 +128,11 @@ class Note {
       // Handle potential null Timestamps, provide default using current time
       createdAt: data['createdAt'] as Timestamp? ?? Timestamp.now(),
       updatedAt: data['updatedAt'] as Timestamp? ?? Timestamp.now(),
+      // Retrieve color as int, convert to Color, default to white
+      color: (data['color'] as int?) != null
+          ? Color(data['color'] as int)
+          : Colors.white,
+      order: data['order'] as int? ?? 0,
     );
   }
 }

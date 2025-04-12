@@ -1,30 +1,35 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:myapp/main.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
+import 'package:logn_notes/main.dart'; // Assuming 'logn_notes' is your package name
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App initializes and displays Login or Home Screen', (WidgetTester tester) async {
+    // Set mock initial values for SharedPreferences before the test runs
+    // Provide an empty map, or mock data if your ThemeNotifier needs it.
+    SharedPreferences.setMockInitialValues({});
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Get the SharedPreferences instance (it will use the mock values)
+    final prefs = await SharedPreferences.getInstance();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Build our app and trigger a frame, passing the required prefs instance.
+    // Use the actual MyApp widget from your main.dart
+    await tester.pumpWidget(MyApp(prefs: prefs));
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Wait for widgets to settle, especially StreamBuilder for auth state
+    await tester.pumpAndSettle();
+
+    // --- Test Update ---
+    // The original counter test is likely placeholder code and won't work
+    // with your actual app structure (which shows LoginScreen or HomeScreen).
+    // Instead, you might test if either the LoginScreen or HomeScreen appears
+    // based on the initial (mocked) auth state.
+
+    // Example: Verify if the LoginScreen's Google Sign-In button is present
+    // (This assumes the initial auth state is logged out)
+    expect(find.text('Sign in with Google'), findsOneWidget);
+
+    // Or, if you mock a logged-in state (more complex), you'd check for HomeScreen elements.
+    // expect(find.text('Your Notes'), findsOneWidget); // Example check for HomeScreen AppBar title
   });
 }

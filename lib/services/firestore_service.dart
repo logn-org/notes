@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/note_model.dart'; // Import the Note model
-
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 // --- services/firestore_service.dart ---
 class FirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
@@ -14,6 +15,7 @@ class FirestoreService {
         // Order by pinned status first, then by last updated time
         .orderBy('isPinned', descending: true)
         .orderBy('updatedAt', descending: true)
+        .orderBy('order', descending: false)
         .snapshots()
         .map(
           (snapshot) =>
@@ -21,9 +23,9 @@ class FirestoreService {
         )
         .handleError((error) {
           // Basic error handling for the stream
-          print("Error fetching notes stream: $error");
-          // Potentially return an empty list or rethrow a custom error
-          return <Note>[];
+          print("Error in notes stream: $error");
+          // Rethrow the error so the stream reports it
+          throw error;
         });
   }
 
@@ -34,12 +36,23 @@ class FirestoreService {
     required dynamic content, // String or List<ChecklistItem>
     required NoteType noteType,
     bool isPinned = false,
+    int color = 0xFFFFFFFF, // Default color is white
+    int order = 0,
   }) {
     Timestamp now = Timestamp.now();
+
+    // Determine default color based on system brightness
+    final brightness = SchedulerBinding.instance.platformDispatcher.platformBrightness;
+    if (color == 0xFFFFFFFF) { // Only change if the provided color is the default white
+      color = brightness == Brightness.light ? 0xFFFFFFFF : 0xFF333333; // Light or dark default
+    }
+
     // Create a Map directly for Firestore, using the Note model's logic
     Map<String, dynamic> noteData = {
       'userId': userId,
       'title': title,
+      'color': color,
+      'order': order,
       'content':
           (noteType == NoteType.checklist && content is List<ChecklistItem>)
               ? content.map((item) => item.toJson()).toList()
@@ -59,6 +72,7 @@ class FirestoreService {
     // Create a Map from the Note object, ensuring updatedAt is current
     Map<String, dynamic> noteData = note.toJson();
     noteData['updatedAt'] = Timestamp.now(); // Ensure updatedAt is fresh
+    noteData['order'] = note.order;
     noteData['serverTimestamp'] =
         FieldValue.serverTimestamp(); // Update server timestamp
 
